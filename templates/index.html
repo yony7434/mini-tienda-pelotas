@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Catálogo de Pelotas{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Catálogo de Pelotas</h1>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description }}</p>
+                <p class="card-text"><strong>Color:</strong> {{ product.color }}</p>
+                <p class="card-text"><strong>Precio:</strong> S/ {{ "%.2f"|format(product.price) }}</p>
+                <div class="input-group mb-3">
+                    <input type="number" class="form-control" value="1" min="1" max="10" 
+                           id="quantity-{{ product.id }}">
+                    <button class="btn btn-primary add-to-cart" 
+                            data-product-id="{{ product.id }}">
+                        Agregar al Carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const productId = this.dataset.productId;
+            const quantity = document.getElementById(`quantity-${productId}`).value;
+            
+            if (!quantity || quantity < 1 || quantity > 10) {
+                alert('Por favor, ingresa una cantidad válida (entre 1 y 10)');
+                return;
+            }
+
+            try {
+                const response = await fetch('/add_to_cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `product_id=${productId}&quantity=${quantity}`
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Error al agregar el producto');
+                }
+
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Error al agregar el producto');
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Entorno virtual
+env/
+
+# Archivos temporales
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Archivos de desarrollo
+.env
+.env.local
+
+# Imágenes de ejemplo
+img/
+
+# Archivos de configuración locales
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
